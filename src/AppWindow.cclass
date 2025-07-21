@@ -1,0 +1,190 @@
+// *********************************************************************************************************
+// Program    : Explorer 
+// File       : AppWindow.cclass
+// Author     : Sean A. Burner 
+// Inception  : 2025-07
+// Details    : gtkmm application gui file directory interactions 
+// Compilation:  g++ -o PathFinder main.cpp `pkg-config --cflags --libs gtkmm-4.0`
+// Notes      : 
+// *********************************************************************************************************
+
+
+#ifndef PATHFINDER_APPWINDOW
+#define PATHFINDER_APPWINDOW
+#define APPWINDOW_WIDTH 1600
+#define APPWINDOW_HEIGHT 700
+#define ADDRESS_ENTRY_WIDTH  900 
+#define ARROW_UP_IMG "pix/icons8-up-arrow-48.png"
+#define ARROW_LEFT_IMG "pix/icons8-left-arrow-48.png"
+#define ARROW_RIGHT_IMG "pix/icons8-right-arrow-48.png"
+#define MENU_IMG "pix/icons8-hamburger-menu-48.png"
+#define ADDRESS_EDIT_IMG "pix/icons8-edit-48.png"
+#endif
+
+#include "GtkMM_Notebook.cclass" 
+#include "NavigatePane.cclass"
+
+class AppWindow : public Gtk::Window
+{
+	protected: 
+		//Member widgets:
+		int 		Width = APPWINDOW_WIDTH, Height = APPWINDOW_HEIGHT;
+		Gtk::Box 	Canvass;
+		Gtk::Entry 	AddressEntry;
+		Gtk::Button	LeftArrowBttn, RightArrowBttn,UpArrowBttn, AddressEditBttn;
+		Gtk::MenuButton	*MenuBttn;
+		GtkMM_Notebook	Notebook;
+		NavigatePane 	NavPane;
+		 
+	public:
+		std::vector<std::string >  Recents,  Favorites;
+		
+  		AppWindow()
+		{
+		HeaderBar() ;
+			// Sets the margin around the button.
+
+			//set_title("PathFinder v.1");
+			set_default_size(Width, Height);
+		//	set_decorated(false);  //REMOVES THE TITLE BAR FROM THE TOP OF THE WINDOW 
+		//	set_skip_taskbar_hint(false);
+
+		  // When the button receives the "clicked" signal, it will call the
+		  // on_button_clicked() method defined below.
+//		  m_button.signal_clicked().connect(sigc::mem_fun(*this,&AppWindow::on_button_clicked));
+
+		  // This packs the button into the Window (a container).
+			//set_child(m_button);
+			//set_child(_Notebook);
+			Build(Width, Height);
+		}
+		~AppWindow() override
+		{
+		};
+		void HeaderBar() 
+		{
+			  // 1. Create a Gtk::HeaderBar
+			  
+        auto header_bar = Gtk::make_managed<Gtk::HeaderBar>();
+
+        // 2. Set the title of the HeaderBar (optional, but common)
+        auto title_box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+/*
+        auto title_label = Gtk::make_managed<Gtk::Label>("PathFinder");
+        title_label->add_css_class("title"); // Optional: apply "title" style class for theming
+
+        auto subtitle_label = Gtk::make_managed<Gtk::Label>("A great application");
+        subtitle_label->add_css_class("subtitle"); // Optional: apply "subtitle" style class for theming
+
+        title_box->append(*title_label);
+        title_box->append(*subtitle_label);
+
+        header_bar->set_title_widget(*title_box); // Set the custom title widget
+*/	
+	auto pmap1 = Gtk::make_managed<Gtk::Image>( ARROW_LEFT_IMG );
+	((Gtk::Button*)&LeftArrowBttn)->set_child( *pmap1 );
+	title_box->append( LeftArrowBttn );
+	
+	auto pmap2 = Gtk::make_managed<Gtk::Image>( ARROW_RIGHT_IMG );
+	((Gtk::Button*)&RightArrowBttn)->set_child( *pmap2 );
+	title_box->append( RightArrowBttn );
+	
+	auto pmap3 = Gtk::make_managed<Gtk::Image>( ARROW_UP_IMG );
+	((Gtk::Button*)&UpArrowBttn)->set_child( *pmap3 );
+	title_box->append( UpArrowBttn );
+		
+        AddressEntry.set_placeholder_text("Enter text here...");
+        AddressEntry.set_editable(false);
+	title_box->append( AddressEntry );
+	auto pmap5 = Gtk::make_managed<Gtk::Image>( ADDRESS_EDIT_IMG );
+	((Gtk::Button*)&AddressEditBttn)->set_child( *pmap5 );	
+	title_box->append( AddressEditBttn );
+	
+	AddressEditBttn.signal_clicked().connect([](AddressEntry) {
+            AddressEntry.set_editable(  !AddressEntry.isEditable() ) ;
+        });
+	header_bar->set_title_widget(*title_box); 
+	
+	AddressEntry.set_size_request(ADDRESS_ENTRY_WIDTH, -1); 
+
+	
+	
+	
+	
+	
+        // 3. Add widgets to the HeaderBar (pack_start and pack_end are still valid)
+        // Add a button to the start (left) of the header bar
+        auto 		menu_box = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL);
+	Gtk::Label 	*label  =  Gtk::make_managed<Gtk::Label>("PathFinder" ) ;	
+
+        auto pmap = Gtk::make_managed<Gtk::Image>( MENU_IMG );
+        MenuBttn = Gtk::make_managed<Gtk::MenuButton>();
+        auto menu = Gio::Menu::create();
+        menu->append("About", "app.about"); // Actions can be linked here
+        menu->append("Quit", "app.quit");
+        MenuBttn->set_menu_model(menu);
+        
+	menu_box->append( *pmap );
+//	menu_box->append( *label );  
+	MenuBttn->set_child( *menu_box );
+       
+       // MenuBttn->signal_clicked().connect([]() {
+       //     std::cout << "Left button clicked!" << std::endl;
+       // });
+        
+        header_bar->pack_start(*MenuBttn);
+        header_bar->pack_start( *label );
+
+        // Add a search entry to the end (right) of the header bar
+        auto search_entry = Gtk::make_managed<Gtk::SearchEntry>();
+        search_entry->set_placeholder_text("Search...");
+        search_entry->signal_search_changed().connect([]() {
+            std::cout << "Search text changed!" << std::endl;
+        });
+        header_bar->pack_end(*search_entry);
+
+        // Add a menu button to the end as well
+/*        auto menu_button = Gtk::make_managed<Gtk::MenuButton>();
+        auto menu = Gio::Menu::create();
+        menu->append("About", "app.about"); // Actions can be linked here
+        menu->append("Quit", "app.quit");
+        menu_button->set_menu_model(menu);
+        header_bar->pack_end(*menu_button);
+*/
+        // 4. Set the HeaderBar as the window's title bar
+        set_titlebar(*header_bar); // This replaces the native title bar
+
+        // 5. (Optional) Show/hide default title buttons (minimize/maximize/close)
+        header_bar->set_show_title_buttons(true); // Explicitly show them (default)
+        
+        		LeftArrowBttn.set_sensitive( false ) ;
+        		RightArrowBttn.set_sensitive( false );
+        		UpArrowBttn.set_sensitive( false );
+
+		};
+		int Build( int width = APPWINDOW_WIDTH,  int height = APPWINDOW_HEIGHT) 
+		{
+			//Define a canvass to put on the application window, then attach the member elements to that 
+			int 		success = true , paneWidth = 200; 
+			
+			
+			Canvass.set_orientation(Gtk::Orientation::HORIZONTAL);
+			
+			NavPane.Build( paneWidth, height );
+			Canvass.append( NavPane );
+			//Canvass.set_default_size( width, height ) 
+			Canvass.set_margin( 10 ); 
+			Canvass.append( Notebook );
+			set_child( Canvass);
+			Canvass.set_size_request( APPWINDOW_WIDTH/3, APPWINDOW_HEIGHT);
+			
+			return success;
+		};
+	protected:
+		//Signal handlers:
+		void on_button_clicked()
+		{
+			std::cout << "Hello World" << std::endl;
+		};
+
+};

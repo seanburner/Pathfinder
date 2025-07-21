@@ -1,0 +1,38 @@
+// *********************************************************************************************************
+// Program    : Explorer 
+// File       : GtkMM_Notebook.cclass
+// Author     : Sean A. Burner 
+// Inception  : 2025-07
+// Details    : gtkmm application gui file directory interactions 
+// Compilation:  g++ -o PathFinder main.cpp `pkg-config --cflags --libs gtkmm-4.0`
+// Notes      : 
+// *********************************************************************************************************
+
+#ifndef GTKMM_NOTEBOOK
+#define GTKMM_NOTEBOOK
+#endif
+
+class GtkMM_Notebook  : public Gtk::Notebook
+{
+	protected: 
+
+	  
+	public: 
+		std::vector <Gtk::Box >  Pages;
+		
+		GtkMM_Notebook () 
+		{
+			//set_title("Gtk::Notebook example");
+			//set_default_size(400, 200);
+			set_margin(1);			
+			set_expand(10);
+			Gtk::Box page1, page2;
+			append_page( page1 , "First");
+			append_page( page2 , "Second");			
+
+		}
+		~GtkMM_Notebook()
+		{
+		}
+};
+

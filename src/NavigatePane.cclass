@@ -1,0 +1,182 @@
+// *********************************************************************************************************
+// Program    : Explorer 
+// File       : NavigatePane.cclass
+// Author     : Sean A. Burner 
+// Inception  : 2025-07
+// Details    : gtkmm application gui file directory interactions 
+// Compilation:  g++ -o PathFinder main.cpp `pkg-config --cflags --libs gtkmm-4.0`
+// Notes      : 
+// *********************************************************************************************************
+
+#ifndef NAVIGATE_PANE
+#define NAVIGATE_PANE
+#define NAVIGATE_WIDTH 200
+#define NAVIGATE_HEIGHT 700
+#define HOME_IMG "pix/icons8-home-50.png" 
+#define DOCS_IMG "pix/icons8-documents-50.png" 
+#define DOWN_IMG "pix/icons8-download-50.png" 
+#define PICS_IMG "pix/icons8-photo-gallery-50.png" 
+#define FAVS_IMG "pix/icons8-favorites-50.png"  
+#define TRASH_IMG "pix/icons8-trash-50.png" 
+#define MOVIE_IMG "pix/icons8-movies-folder-50.png" 
+#define MUSIC_IMG "pix/icons8-music-50.png" 
+#define RECENTS_IMG "pix/icons8-recent-64.png" 
+#define NETWORK_IMG "pix/icons8-networking-manager-48.png" 
+#define COMPUTER_IMG "pix/icons8-computer-48.png"
+#endif
+
+class NavigatePane: public Gtk::Box
+{
+	protected: 
+	public:
+		Gtk::Button  HomeBttn, DocsBttn, DownBttn, MusicBttn,VideoBttn, PicsBttn, RecentsBttn, FavsBttn, TrashBttn, NetworkBttn, ComputerBttn;
+	
+	NavigatePane() : Gtk::Box()
+	{
+	}
+	~NavigatePane()
+	{
+	}
+	
+	int Build( int width = NAVIGATE_WIDTH,  int height = NAVIGATE_HEIGHT) 
+	{
+		//Define a canvass to put on the application window, then attach the member elements to that 
+		int 		success = true, bttnHeight = 40;		
+		Gtk::Box 	*content = NULL,  *topBuffer = NULL; 
+		Gtk::Label 	*label  = NULL; 
+			
+		set_orientation(Gtk::Orientation::VERTICAL);
+
+		topBuffer = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 5);
+		append ( *topBuffer );
+		
+		// Recents 
+		AddNavButton( (std::string) "Recents" , (Gtk::Widget*)&RecentsBttn , (std::string) RECENTS_IMG, (int) width, (int) bttnHeight);
+		append( RecentsBttn ); 
+		
+		//  Favourites 
+		AddNavButton( (std::string) "Favorites" , (Gtk::Widget*)&FavsBttn ,(std::string) FAVS_IMG, (int) width, (int) bttnHeight);
+		append( FavsBttn ); 
+		
+		//  Trash
+		AddNavButton( (std::string) "Trash" , (Gtk::Widget*)&TrashBttn ,(std::string) TRASH_IMG, (int) width, (int) bttnHeight);
+		append( TrashBttn ); 
+
+
+				
+		Gtk::Separator* separator1 = Gtk::make_managed<Gtk::Separator>(); // Use make_managed for heap allocation
+	        separator1->set_orientation(Gtk::Orientation::HORIZONTAL);
+		append(*separator1 );		
+					
+		// HomeButton 
+		AddNavButton( (std::string) "Home" , (Gtk::Widget*)&HomeBttn , (std::string) HOME_IMG, (int) width, (int) bttnHeight);
+		append( HomeBttn ); 
+		
+		//  Documents 
+		AddNavButton( (std::string) "Documents" , (Gtk::Widget*)&DocsBttn ,(std::string) DOCS_IMG, (int) width, (int) bttnHeight);
+		append( DocsBttn );  
+		
+		//  Downloads 
+		AddNavButton( (std::string) "Downloads" , (Gtk::Widget*)&DownBttn ,(std::string) DOWN_IMG, (int) width, (int) bttnHeight);
+		append( DownBttn );
+		
+		//  Music 
+		AddNavButton( (std::string) "Music" , (Gtk::Widget*)&MusicBttn ,(std::string) MUSIC_IMG, (int) width, (int) bttnHeight);
+		append( MusicBttn ); 	
+		
+		//  Videos 
+		AddNavButton( (std::string) "Videos" , (Gtk::Widget*)&VideoBttn ,(std::string) MOVIE_IMG, (int) width, (int) bttnHeight);
+		append( VideoBttn );
+		
+		//  Pictures 
+		AddNavButton( (std::string) "Pictures" , (Gtk::Widget*)&PicsBttn ,(std::string) PICS_IMG, (int) width, (int) bttnHeight);
+		append( PicsBttn ); 
+		
+		Gtk::Separator* separator = Gtk::make_managed<Gtk::Separator>(); // Use make_managed for heap allocation
+	        separator->set_orientation(Gtk::Orientation::HORIZONTAL);
+		append(*separator );
+		 
+		//  Computer
+		AddNavButton( (std::string) "Computer" , (Gtk::Widget*)&ComputerBttn ,(std::string) COMPUTER_IMG, (int) width, (int) bttnHeight);
+		append( ComputerBttn ); 
+
+		//  Network
+		AddNavButton( (std::string) "Network" , (Gtk::Widget*)&NetworkBttn ,(std::string) NETWORK_IMG, (int) width, (int) bttnHeight);		
+		append( NetworkBttn ); 	
+		
+		Gtk::Separator* separator2 = Gtk::make_managed<Gtk::Separator>(); // Use make_managed for heap allocation
+	        separator2->set_orientation(Gtk::Orientation::HORIZONTAL);
+		append(*separator2 ); 		
+		
+		return success;
+	};
+	protected: int AddNavButton( std::string title , Gtk::Widget *bttn ,  std::string  imageName , int width = 200, int height = 30)
+	{
+		// TEMPLATE FUNCTION TO ADD THE DIFFERENT BUTTONS TO THE NAVIGATION SECTION 
+		int 		success  = true;
+		Gtk::Box 	*content = NULL; 
+		Gtk::Label 	*label   = NULL; 
+
+		
+		label 	= Gtk::make_managed<Gtk::Label>(title);	
+		content = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 5);
+		if( imageName.length() > 0  ) 
+		{
+			auto pmap = Gtk::make_managed<Gtk::Image>(imageName);
+			content->append( *pmap ); 			
+		}
+		content->append( *label );
+		//GtkReliefStyle relief = GTK_RELIEF_NONE
+		
+		((Gtk::Button*)bttn)->set_child( *content );	
+		((Gtk::Button*)bttn)->set_size_request( width, height);
+		//((Gtk::Button*)bttn)->set_relief( Gtk::RELIEF_NONE);
+		((Gtk::Button*)bttn)->add_css_class("no-relief-button");
+		// Apply CSS
+	        auto provider = Gtk::CssProvider::create();
+        	provider->load_from_data(R"(
+        		    .no-relief-button {
+			              /*  -gtk-relief-style: none;  This is the key property */
+			                border-width: 0;
+			                background-image: none;
+			                background-color: transparent; /* Or a solid color if you prefer */
+			                box-shadow: none;
+			            }
+
+		            /* Optional: Adjust hover/active states if needed */
+		            .no-relief-button:hover {
+                		background-color: rgba(0, 0, 0, 0.1); /* Subtle highlight on hover */
+		            }
+
+		            .no-relief-button:active {
+                		background-color: rgba(0, 0, 0, 0.2); /* More prominent on active */
+		            }
+	        )");
+
+		Gtk::StyleContext::add_provider_for_display(get_display(), provider, GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+  
+		return success; 
+	};
+	
+	/*
+		int NavigationPane(int width = APPWINDOW_WIDTH , int height = APPWINDOW_HEIGHT) 
+		{
+			// Left side pane to hold navigation articles 
+			int 		success = true; 
+			auto	 	hBox = Gtk::make_managed<Gtk::Box>(Gtk::Orientation::HORIZONTAL, 5);
+			auto		label = Gtk::make_managed<Gtk::Label>("Home");
+			Gtk::Button 	homeButton; 
+			
+			label->set_expand( false);
+			hBox->append( *label) ;
+			homeButton.set_child( *hBox ); 
+			homeButton.set_size_request( 50, 25);
+			LeftPane.set_orientation(Gtk::Orientation::HORIZONTAL);
+			LeftPane.set_margin( 10 ); 
+			LeftPane.append( homeButton); 
+			Canvass.append( LeftPane );
+			
+			return success; 
+		};
+*/
+};
