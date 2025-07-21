@@ -1,0 +1,33 @@
+name: C++ CI on Fedora
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest  # Using Ubuntu as the base runner to set up Fedora environment
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Fedora environment with Podman
+        run: |
+          sudo apt update
+          sudo apt-get -y install podman
+          podman pull fedora:38  # Pull the Fedora 38 image
+
+          { echo 'FROM fedora:38'
+            echo 'RUN dnf -y update'
+            echo 'RUN dnf -y install gcc-c++ gtk4-dev* cmake make' # Install C++ tools
+            echo 'COPY . /app'
+            echo 'WORKDIR /app'
+            echo 'RUN cmake -S . -B build'
+            echo 'RUN cmake --build build'
+            echo 'RUN ./build/my_test_executable' # Replace with your test command
+          } > podmanfile
+          podman build --tag fedora-cpp-ci -f ./podmanfile
+
+      - name: Run C++ CI inside Fedora container
+        run: |
+          podman run fedora-cpp-ci
+
