@@ -18,7 +18,7 @@ jobs:
 
           { echo 'FROM fedora:38'
             echo 'RUN dnf -y update'
-            echo 'RUN dnf -y install gcc-c++ gtk4-dev* cmake make' # Install C++ tools
+            echo 'RUN dnf -y install gcc-c++ gtk4* cmake make' # Install C++ tools
             echo 'COPY . /app'
             echo 'WORKDIR /app'
             echo 'RUN cmake -S . -B build'
